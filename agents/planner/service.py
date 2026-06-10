@@ -13,7 +13,7 @@ class PlannerAgent:
 
     def __init__(self, router: LLMRouter) -> None:
         self.router = router
-        self.tools = PlannerTools()
+        self.tools = PlannerTools(router)
 
     async def run(self, profile: LearnerProfile, max_steps: int = 6) -> tuple[PlannerOutput, object]:
         observations, decision_usage = await self._react(profile, max_steps=max_steps)
@@ -43,7 +43,7 @@ class PlannerAgent:
         difficulty = tool_results.get("difficulty_estimator", {}).get("difficulty", "Intermediate")
         stages = tool_results.get("roadmap_template_lookup", {}).get(
             "stages",
-            self.tools.roadmap_template_lookup(domain, difficulty)["stages"],
+            (await self.tools.roadmap_template_lookup(domain, difficulty))["stages"],
         )
         trace = []
         for item in observations:
@@ -86,7 +86,7 @@ class PlannerAgent:
             usage.latency_ms += action_usage.latency_ms
             if action.action == "Finish":
                 break
-            observation = self._execute_action(profile, action.action, action.action_input, steps)
+            observation = await self._execute_action(profile, action.action, action.action_input, steps)
             log_line(
                 "PLANNER REACT",
                 step=len(steps) + 1,
@@ -187,7 +187,7 @@ class PlannerAgent:
             action_input={},
         )
 
-    def _execute_action(
+    async def _execute_action(
         self,
         profile: LearnerProfile,
         action: str,
@@ -196,15 +196,15 @@ class PlannerAgent:
     ) -> dict:
         observations = {step.action: step.observation for step in steps}
         if action == "domain_classifier":
-            return self.tools.domain_classifier(profile)
+            return await self.tools.domain_classifier(profile)
         if action == "skill_gap_analysis":
             domain = action_input.get("domain") or observations.get("domain_classifier", {}).get("domain")
-            return self.tools.skill_gap_analysis(profile, domain or "general_technology")
+            return await self.tools.skill_gap_analysis(profile, domain or "general_technology")
         if action == "difficulty_estimator":
             gaps = observations.get("skill_gap_analysis", {}).get("gaps", [])
-            return self.tools.difficulty_estimator(profile, gaps)
+            return await self.tools.difficulty_estimator(profile, gaps)
         if action == "roadmap_template_lookup":
             domain = action_input.get("domain") or observations.get("domain_classifier", {}).get("domain")
             difficulty = action_input.get("difficulty") or observations.get("difficulty_estimator", {}).get("difficulty")
-            return self.tools.roadmap_template_lookup(domain or "general_technology", difficulty or "Intermediate")
+            return await self.tools.roadmap_template_lookup(domain or "general_technology", difficulty or "Intermediate")
         return {}
