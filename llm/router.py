@@ -40,39 +40,43 @@ class LLMRouter:
         self._deepseek = self._build_deepseek()
 
     def _build_openai(self) -> ChatOpenAI | None:
-        if not self.settings.use_llm or not self.settings.openai_api_key:
+        key = self.settings.openai_api_key
+        if not self.settings.use_llm or not key or not key.strip():
             return None
         return ChatOpenAI(
             model=self.settings.openai_model,
-            api_key=self.settings.openai_api_key,
+            api_key=key.strip(),
             temperature=0.2,
         )
 
     def _build_groq(self) -> ChatGroq | None:
-        if not self.settings.use_llm or not self.settings.groq_api_key:
+        key = self.settings.groq_api_key
+        if not self.settings.use_llm or not key or not key.strip():
             return None
         return ChatGroq(
             model=self.settings.groq_model,
-            api_key=self.settings.groq_api_key,
+            api_key=key.strip(),
             temperature=0.2,
         )
 
     def _build_mistral(self) -> ChatOpenAI | None:
-        if not self.settings.use_llm or not self.settings.mistral_api_key:
+        key = self.settings.mistral_api_key
+        if not self.settings.use_llm or not key or not key.strip():
             return None
         return ChatOpenAI(
             model=self.settings.mistral_model,
-            api_key=self.settings.mistral_api_key,
+            api_key=key.strip(),
             base_url="https://openrouter.ai/api/v1",
             temperature=0.2,
         )
 
     def _build_deepseek(self) -> ChatOpenAI | None:
-        if not self.settings.use_llm or not self.settings.deepseek_api_key:
+        key = self.settings.deepseek_api_key
+        if not self.settings.use_llm or not key or not key.strip():
             return None
         return ChatOpenAI(
             model=self.settings.deepseek_model,
-            api_key=self.settings.deepseek_api_key,
+            api_key=key.strip(),
             base_url="https://api.deepseek.com/v1",
             temperature=0.2,
         )
