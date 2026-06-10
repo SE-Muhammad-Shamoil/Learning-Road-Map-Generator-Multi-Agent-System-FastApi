@@ -13,6 +13,14 @@ class Settings(BaseSettings):
     # LLM configuration
     gemini_api_key: str | None = Field(default=None, alias="GEMINI_API_KEY")
     gemini_model: str = "gemini-3.1-flash-lite"
+    openai_api_key: str | None = Field(default=None, alias="OPENAI_API_KEY")
+    openai_model: str = "gpt-4o-mini"
+    groq_api_key: str | None = Field(default=None, alias="GROQ_API_KEY")
+    groq_model: str = "llama-3.3-70b-versatile"
+    mistral_api_key: str | None = Field(default=None, alias="MISTRAL_API_KEY")
+    mistral_model: str = "codestral"
+    deepseek_api_key: str | None = Field(default=None, alias="DEEPSEEK_API_KEY")
+    deepseek_model: str = "deepseek-chat"
     use_llm: bool = True
     enable_external_tools: bool = True
     debug_mode: bool = True

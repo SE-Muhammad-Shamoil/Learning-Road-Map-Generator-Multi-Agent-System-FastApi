@@ -31,6 +31,29 @@ def to_public_response(state: RoadmapState) -> RoadmapResponse:
         else:
             message = "The requested goal is too broad or invalid. Please refine it."
             
+    # Calculate used models and if any is a less powerful / economy model
+    used_models = []
+    is_less_powerful = False
+    for usage in state.get("provider_usage", []):
+        if usage.used_live_llm and usage.model:
+            used_models.append(usage.model)
+            if usage.model.lower() in {
+                "gpt-4o-mini",
+                "llama-3.1-8b-instant",
+                "llama-3.3-70b-versatile",
+                "codestral",
+                "gemini-3.1-flash-lite",
+            }:
+                is_less_powerful = True
+
+    # Deduplicate models
+    seen = set()
+    deduped_models = []
+    for m in used_models:
+        if m not in seen:
+            seen.add(m)
+            deduped_models.append(m)
+
     return RoadmapResponse(
         status=status,
         message=message,
@@ -39,6 +62,8 @@ def to_public_response(state: RoadmapState) -> RoadmapResponse:
             iterations=len(state.get("scores_by_iteration", [])),
             duration_seconds=round(duration, 3),
             generated_at=finished.isoformat(),
+            is_less_powerful_model_used=is_less_powerful,
+            used_models=deduped_models,
         ),
     )
 

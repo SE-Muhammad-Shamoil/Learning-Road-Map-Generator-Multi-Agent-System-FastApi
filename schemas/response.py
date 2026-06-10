@@ -11,6 +11,8 @@ class RoadmapMetadata(BaseModel):
     iterations: int = 0
     duration_seconds: float = 0
     generated_at: str
+    is_less_powerful_model_used: bool = False
+    used_models: list[str] = Field(default_factory=list)
 
 
 class FrontendRoadmap(BaseModel):
