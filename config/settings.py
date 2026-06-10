@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     groq_api_key: str | None = Field(default=None, alias="GROQ_API_KEY")
     groq_model: str = "llama-3.3-70b-versatile"
     mistral_api_key: str | None = Field(default=None, alias="MISTRAL_API_KEY")
-    mistral_model: str = "codestral"
+    mistral_model: str = "mistralai/codestral"
     deepseek_api_key: str | None = Field(default=None, alias="DEEPSEEK_API_KEY")
     deepseek_model: str = "deepseek-chat"
     use_llm: bool = True

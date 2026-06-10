@@ -57,12 +57,13 @@ class LLMRouter:
             temperature=0.2,
         )
 
-    def _build_mistral(self) -> ChatMistralAI | None:
+    def _build_mistral(self) -> ChatOpenAI | None:
         if not self.settings.use_llm or not self.settings.mistral_api_key:
             return None
-        return ChatMistralAI(
+        return ChatOpenAI(
             model=self.settings.mistral_model,
             api_key=self.settings.mistral_api_key,
+            base_url="https://openrouter.ai/api/v1",
             temperature=0.2,
         )
 
